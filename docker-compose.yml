@@ -1,0 +1,41 @@
+  
+version: '3'
+
+services:
+    app:
+        container_name: app
+        build: .
+        networks:
+            laravel_net:
+                ipv4_address: 172.25.1.101
+        ports:
+            - 8001:8001
+        volumes:
+            - .:/home/proyecto
+            - /home/proyecto/vendor
+        environment:
+            LARAVEL_DB_CONNECTION: mysql
+            LARAVEL_DB_HOST: 172.25.1.102
+            LARAVEL_DB_PORT: 3306
+            LARAVEL_DB_DATABASE: laravel_db
+            LARAVEL_DB_USERNAME: root
+            LARAVEL_DB_PASSWORD: pass
+
+    db:
+        container_name: db
+        image: mariadb
+        networks:
+            laravel_net:
+                ipv4_address: 172.25.1.102
+        restart: always
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: pass
+    
+networks:
+    laravel_net:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.25.1.0/24
